@@ -1,47 +1,21 @@
-# This sciprt file contains a frame for learning handwritten digitals from the MNIST dataset
+source('load_data.R')
+source('nn_model.R')
+source('print_stat.R')
 
-# load training data from files
-data <- loadMNISTData("C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\train-images.idx3-ubyte", "C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\train-labels.idx1-ubyte")
-trainLabels <- data$labels
-trainData <- data$data
+# load training data
+data <- loadMNISTData('train-images.idx3-ubyte', 'train-labels.idx1-ubyte')
+trainData <- data$data # 60000x784
+trainLabels <- data$labels # 60000x1
 
-print(dim(trainData))
-print(dim(trainLabels))
-# trainingData should be 60000x786,  60000 data and 784 features (28x28), tha matrix trainData has 60000 rows and 784 columns
-# trainingLabels should have 60000x1, one class label \in {0,1,...9} for each data.
+classifier <- learnModel(trainData, trainLabels) # train 1-layer nn model (softmax regression)
 
-#uncomment the following 3 lines to see the nth training example and its class label.
-# n = 10;
-# image( t(matrix(trainData[n, ], ncol=28, nrow=28)), Rowv=28, Colv=28, col = heat.colors(256),  margins=c(5,10))
-# print("Class label:"); print(trainLabels[n])
+print("On train:", quote=FALSE)
+printStat(testModel(classifier, trainData), trainLabels) # print statistics on train data
 
-# train a model
-classifier <- learnModel(data = trainData, labels = trainLabels)
-predictedLabels <- testModel(classifier, trainData)
+# load testing data from files
+data <- loadMNISTData('t10k-images.idx3-ubyte', 't10k-labels.idx1-ubyte')
+testData <- data$data  # 10000x784
+testLabels <- data$labels # 10000x1
 
-#calculate accuracy on training data
-print("accuracy on training data:\t")
-print(sum(predictedLabels == trainLabels)/length(trainLabels))
-
-#calculate the following error metric for each class obtained on the train data:
-#Recall, precision, specificity, F-measure, FDR and ROC for each class separately. Use a package for ROC. 
-
-
-# test the model
-data <- loadMNISTData("C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\t10k-images.idx3-ubyte", "C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\t10k-labels.idx1-ubyte")
-testLabels <- data$labels
-testData <- data$data
-
-print(dim(testData))
-print(dim(testLabels))
-#trainingData should be 10000x786,  10000 data and 784 features (28x28), tha matrix trainData has 10000 rows and 784 columns
-#trainingLabels should have 10000x1, one class label \in {0,1,...9} for each data.
-
-predictedLabels <- testModel(classifier, testData)
-
-#calculate accuracy
-print("accuracy on test data:\t")
-print(sum(predictedLabels == testLabels)/length(testLabels))
-
-#calculate the following error metric for each class obtained on the test data:
-#Recall, precision, specificity, F-measure, FDR and ROC for each class separately. Use a package for ROC. 
+print("On test:", quote=FALSE)
+printStat(testModel(classifier, testData), testLabels) # print statistics on test data
