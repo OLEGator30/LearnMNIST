@@ -31,6 +31,9 @@ printStat <- function(predictedLabels, gtLabels) {
         f1score <- 2 * TP / (2 * TP + FP + FN)
         print(sprintf('  %d  F1-score:    %.5f', label, f1score), quote=FALSE)
 
+        FDR <- FP / (FP + TP)
+        print(sprintf('  %d  FDR:         %.5f', label, FDR), quote=FALSE)
+
         auc <- auc(roc(classPredictedLabels, factor(classGtLabels)))
         print(sprintf('  %d  AUC:         %.5f', label, auc), quote=FALSE)
     }
